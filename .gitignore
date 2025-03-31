@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+
+# Google API credentials
+key/
+*.json
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo 
