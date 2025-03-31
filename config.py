@@ -16,18 +16,18 @@ class Config:
     def from_env(cls) -> 'Config':
         load_dotenv()
         
-        client_secret_path = os.getenv('MCPGS_CLIENT_SECRET_PATH')
+        client_secret_path = os.getenv('MCPGD_CLIENT_SECRET_PATH')
         if not client_secret_path:
-            raise ValueError("MCPGS_CLIENT_SECRET_PATH environment variable is required")
+            raise ValueError("MCPGD_CLIENT_SECRET_PATH environment variable is required")
             
-        token_path = os.getenv('MCPGS_TOKEN_PATH')
+        token_path = os.getenv('MCPGD_TOKEN_PATH')
         if not token_path:
             home_dir = os.path.expanduser('~')
             token_path = os.path.join(home_dir, '.mcp_google_spreadsheet.json')
             
-        folder_id = os.getenv('MCPGS_FOLDER_ID')
+        folder_id = os.getenv('MCPGD_FOLDER_ID')
         if not folder_id:
-            raise ValueError("MCPGS_FOLDER_ID environment variable is required")
+            raise ValueError("MCPGD_FOLDER_ID environment variable is required")
             
         logger.info(json.dumps({
             "event": "config_loaded",

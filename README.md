@@ -60,9 +60,9 @@ pip install -r requirements.txt
 
 ### 4. 환경 변수 설정 (Environment Variables Setup):
 ```bash
-export MCPGS_CLIENT_SECRET_PATH="/path/to/client_secret.json"
-export MCPGS_FOLDER_ID="your_folder_id"
-export MCPGS_TOKEN_PATH="/path/to/token.json"  # 선택사항 (Optional)
+export MCPGD_CLIENT_SECRET_PATH="/path/to/client_secret.json"
+export MCPGD_FOLDER_ID="your_folder_id"
+export MCPGD_TOKEN_PATH="/path/to/token.json"  # 선택사항 (Optional)
 ```
 
 ## 사용 방법 (Usage)
@@ -86,9 +86,9 @@ mcp create_chart --chart-type "LINE" --range "A1:B10" --sheet-name "Sheet1" --ti
 
 ## 환경 변수 (Environment Variables)
 
-- `MCPGS_CLIENT_SECRET_PATH`: Google OAuth 2.0 클라이언트 시크릿 파일 경로 (Path to Google OAuth 2.0 client secret file)
-- `MCPGS_FOLDER_ID`: Google Drive 폴더 ID (Google Drive folder ID)
-- `MCPGS_TOKEN_PATH`: 토큰 저장 파일 경로 (Path to token storage file, Optional, Default: ~/.mcp_google_spreadsheet.json)
+- `MCPGD_CLIENT_SECRET_PATH`: Google OAuth 2.0 클라이언트 시크릿 파일 경로 (Path to Google OAuth 2.0 client secret file)
+- `MCPGD_FOLDER_ID`: Google Drive 폴더 ID (Google Drive folder ID)
+- `MCPGD_TOKEN_PATH`: 토큰 저장 파일 경로 (Path to token storage file, Optional, Default: ~/.mcp_google_spreadsheet.json)
 
 ## 라이선스 (License)
 
