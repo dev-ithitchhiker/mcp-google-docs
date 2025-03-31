@@ -1,5 +1,7 @@
 # MCP Google Spreadsheet
 
+Version: 1.0.0
+
 Google Spreadsheet와 Google Drive를 조작하기 위한 MCP(Metoro Control Protocol) 도구입니다.
 A tool for manipulating Google Spreadsheet and Google Drive using MCP (Metoro Control Protocol).
 
