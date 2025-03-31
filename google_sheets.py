@@ -16,22 +16,22 @@ class GoogleSheets:
         return spreadsheet.get('sheets', [])
 
     def duplicate_sheet(self, spreadsheet_id: str, sheet_id: int, new_name: str) -> Dict[str, Any]:
-        """기존 시트를 복제하여 새 시트를 생성합니다."""
+        """Create a new sheet by duplicating an existing one."""
         try:
             logger.info(f"Duplicating sheet {sheet_id} to new sheet with name: {new_name}")
-            # 시트 복사 요청
+            # Request sheet copy
             copy_request = {
                 'destinationSpreadsheetId': spreadsheet_id
             }
             
-            # 시트 복사 실행
+            # Execute sheet copy
             result = self.service.spreadsheets().sheets().copyTo(
                 spreadsheetId=spreadsheet_id,
                 sheetId=sheet_id,
                 body=copy_request
             ).execute()
             
-            # 새 시트의 ID 가져오기
+            # Get new sheet ID
             new_sheet_id = result.get('sheetId')
             if not new_sheet_id:
                 logger.error(f"Failed to get new sheet ID after duplicating sheet {sheet_id}")
@@ -41,7 +41,7 @@ class GoogleSheets:
                     'details': result
                 }
             
-            # 새 시트 이름 변경
+            # Rename new sheet
             rename_result = self.rename_sheet(spreadsheet_id, new_sheet_id, new_name)
             if not rename_result:
                 logger.error(f"Failed to rename new sheet {new_sheet_id}")
@@ -65,7 +65,7 @@ class GoogleSheets:
             }
 
     def rename_sheet(self, spreadsheet_id: str, sheet_id: int, new_name: str) -> Dict[str, Any]:
-        """시트 이름을 변경합니다."""
+        """Rename a sheet."""
         try:
             logger.info(f"Renaming sheet {sheet_id} to '{new_name}'")
             body = {
@@ -106,7 +106,7 @@ class GoogleSheets:
             }
 
     def get_sheet_data(self, spreadsheet_id: str, sheet_name: str, range_name: str) -> Dict[str, Any]:
-        """시트의 데이터를 조회합니다."""
+        """Get data from a sheet."""
         try:
             logger.info(f"Getting data from sheet '{sheet_name}' range '{range_name}'")
             result = self.service.spreadsheets().values().get(
@@ -136,7 +136,7 @@ class GoogleSheets:
             }
 
     def add_rows(self, spreadsheet_id: str, sheet_name: str, values: List[List[Any]]) -> Dict[str, Any]:
-        """시트에 행을 추가합니다."""
+        """Add rows to a sheet."""
         try:
             logger.info(f"Adding rows to sheet '{sheet_name}'")
             body = {
@@ -171,10 +171,10 @@ class GoogleSheets:
             }
 
     def add_columns(self, spreadsheet_id: str, sheet_name: str, values: List[List[Any]]) -> Dict[str, Any]:
-        """시트에 열을 추가합니다."""
+        """Add columns to a sheet."""
         try:
             logger.info(f"Adding columns to sheet '{sheet_name}'")
-            # 시트 ID 가져오기
+            # Get sheet ID
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
             sheet_id = None
             for sheet in spreadsheet.get('sheets', []):
@@ -189,7 +189,7 @@ class GoogleSheets:
                     'error': f"Sheet '{sheet_name}' not found"
                 }
 
-            # 열 추가
+            # Add columns
             body = {
                 'requests': [{
                     'appendDimension': {
@@ -226,11 +226,11 @@ class GoogleSheets:
             }
 
     def update_cells(self, values: List[List[Any]], range_name: str, sheet_name: str, spreadsheet_id: str, format: Dict[str, Any] = None) -> Dict[str, Any]:
-        """시트의 셀을 업데이트합니다."""
+        """Update cells in a sheet."""
         try:
             logger.info(f"Updating cells in sheet '{sheet_name}' range '{range_name}'")
             
-            # 시트 ID 가져오기
+            # Get sheet ID
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
             sheet_id = None
             for sheet in spreadsheet.get('sheets', []):
@@ -245,10 +245,10 @@ class GoogleSheets:
                     'error': f"Sheet '{sheet_name}' not found"
                 }
             
-            # range_name 파싱
+            # Parse range_name
             range_info = self._parse_range(range_name)
             
-            # 데이터 차원 검증
+            # Data dimension validation
             expected_cols = range_info['endColumnIndex'] - range_info['startColumnIndex']
             if any(len(row) != expected_cols for row in values):
                 logger.error(f"Data dimensions do not match range. Expected {expected_cols} columns, got {len(values[0])}")
@@ -257,7 +257,7 @@ class GoogleSheets:
                     'error': f"Data dimensions do not match range. Expected {expected_cols} columns, got {len(values[0])}"
                 }
             
-            # format 파라미터 처리
+            # format parameter handling
             if isinstance(format, str):
                 try:
                     import json
@@ -269,7 +269,7 @@ class GoogleSheets:
                         'error': f"Invalid format parameter: {format}"
                     }
             
-            # 업데이트 요청 생성
+            # Create update request
             updates = [{
                 'range': {
                     'sheetId': sheet_id,
@@ -283,7 +283,7 @@ class GoogleSheets:
                 'format': format
             }]
             
-            # batch_update_cells 사용
+            # Use batch_update_cells
             result = self.batch_update_cells(spreadsheet_id, sheet_name, updates)
             
             if not result['success']:
@@ -302,11 +302,11 @@ class GoogleSheets:
             }
 
     def _parse_html_tags(self, text: str) -> Dict[str, Any]:
-        """HTML 태그를 Google Sheets 스타일로 변환합니다."""
+        """Convert HTML tags to Google Sheets style."""
         style = {}
         content = text
         
-        # HTML 태그 제거 및 스타일 추출
+        # Remove HTML tags and extract styles
         while '<' in content and '>' in content:
             start = content.find('<')
             end = content.find('>', start)
@@ -316,15 +316,15 @@ class GoogleSheets:
             tag = content[start:end+1]
             content = content[:start] + content[end+1:]
             
-            # 닫는 태그 처리
+            # Handle closing tags
             if tag.startswith('</'):
                 continue
                 
-            # 태그 내용 추출
+            # Extract tag content
             tag_name = tag[1:].split()[0].lower()
             tag_attrs = {}
             
-            # 속성 추출
+            # Extract attributes
             if ' ' in tag:
                 attrs = tag[tag.find(' ')+1:-1].split()
                 for attr in attrs:
@@ -332,7 +332,7 @@ class GoogleSheets:
                         key, value = attr.split('=', 1)
                         tag_attrs[key.lower()] = value.strip("'\"")
             
-            # 스타일 적용
+            # Apply styles
             if tag_name in ['b', 'strong']:
                 style['bold'] = True
             elif tag_name in ['i', 'em']:
@@ -372,21 +372,21 @@ class GoogleSheets:
         }
 
     def _parse_range(self, range_str: str) -> Dict[str, int]:
-        """범위 문자열을 파싱하여 인덱스로 변환합니다."""
-        # 예: 'A1:D1' -> {'startRowIndex': 0, 'endRowIndex': 1, 'startColumnIndex': 0, 'endColumnIndex': 3}
+        """Parse range string to convert to indices."""
+        # Example: 'A1:D1' -> {'startRowIndex': 0, 'endRowIndex': 1, 'startColumnIndex': 0, 'endColumnIndex': 3}
         if ':' in range_str:
             start_range, end_range = range_str.split(':')
-            # 열 문자 추출 (첫 번째 문자만 사용)
+            # Extract column letter (use only the first character)
             start_col = start_range[0].upper()
             start_row = int(start_range[1:]) - 1  # 0-based index
             end_col = end_range[0].upper()
             end_row = int(end_range[1:]) - 1  # 0-based index
             
-            # 열 문자를 인덱스로 변환 (A=0, B=1, ...)
+            # Convert column letter to index (A=0, B=1, ...)
             start_col_index = ord(start_col) - ord('A')
             end_col_index = ord(end_col) - ord('A')
         else:
-            # 단일 셀 범위 처리
+            # Handle single cell range
             start_col = range_str[0].upper()
             start_row = int(range_str[1:]) - 1  # 0-based index
             start_col_index = ord(start_col) - ord('A')
@@ -401,10 +401,10 @@ class GoogleSheets:
         }
 
     def batch_update_cells(self, spreadsheet_id: str, sheet_name: str, updates: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """시트의 여러 셀을 일괄 업데이트합니다. HTML 태그를 지원합니다."""
+        """Batch update cells in a sheet. Supports HTML tags."""
         try:
             logger.info(f"Batch updating cells in sheet '{sheet_name}'")
-            # 시트 ID 가져오기
+            # Get sheet ID
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
             sheet_id = None
             for sheet in spreadsheet.get('sheets', []):
@@ -412,7 +412,7 @@ class GoogleSheets:
                     sheet_id = sheet['properties']['sheetId']
                     break
             
-            # 시트가 존재하지 않는 경우 생성
+            # Create new sheet if sheet does not exist
             if sheet_id is None:
                 logger.info(f"Sheet '{sheet_name}' not found, creating new sheet")
                 create_result = self.add_sheet(spreadsheet_id, sheet_name)
@@ -421,11 +421,11 @@ class GoogleSheets:
                     return create_result
                 sheet_id = create_result['result']['sheet_id']
 
-            # 업데이트 요청 생성
+            # Create update requests
             requests = []
             for update in updates:
                 if 'range' in update and 'values' in update:
-                    # range가 문자열인 경우 파싱
+                    # Handle range as string
                     if isinstance(update['range'], str):
                         range_info = self._parse_range(update['range'])
                     else:
@@ -435,7 +435,7 @@ class GoogleSheets:
                     merge = update.get('merge', False)
                     format_config = update.get('format', {})
 
-                    # 셀 업데이트 요청
+                    # Create cell update request
                     cell_request = {
                         'updateCells': {
                             'range': {
@@ -450,34 +450,34 @@ class GoogleSheets:
                         }
                     }
 
-                    # 각 행의 데이터와 스타일 추가
+                    # Add data and style for each row
                     for row in values:
                         row_data = {'values': []}
                         for value in row:
-                            # 빈 문자열 처리
+                            # Handle empty string
                             if value == "":
                                 cell_data = {'userEnteredValue': None}
                             else:
-                                # HTML 태그 파싱
+                                # Parse HTML tags
                                 parsed = self._parse_html_tags(str(value))
                                 cell_data = {'userEnteredValue': {'stringValue': parsed['text']}}
                                 
-                                # 스타일 적용
+                                # Apply styles
                                 cell_data['userEnteredFormat'] = {}
                                 
-                                # 기본 스타일 적용
+                                # Apply default styles
                                 if format_config:
                                     if 'textFormat' in format_config:
                                         cell_data['userEnteredFormat']['textFormat'] = format_config['textFormat']
                                     if 'backgroundColor' in format_config:
                                         cell_data['userEnteredFormat']['backgroundColor'] = format_config['backgroundColor']
                                 
-                                # HTML 태그 스타일 적용
+                                # Apply HTML tag styles
                                 if parsed['style']:
                                     if 'textFormat' not in cell_data['userEnteredFormat']:
                                         cell_data['userEnteredFormat']['textFormat'] = {}
                                     
-                                    # 텍스트 스타일
+                                    # Text styles
                                     if 'bold' in parsed['style']:
                                         cell_data['userEnteredFormat']['textFormat']['bold'] = parsed['style']['bold']
                                     if 'italic' in parsed['style']:
@@ -487,19 +487,19 @@ class GoogleSheets:
                                     if 'underline' in parsed['style']:
                                         cell_data['userEnteredFormat']['textFormat']['underline'] = parsed['style']['underline']
                                     
-                                    # 글자 크기
+                                    # Font size
                                     if 'fontSize' in parsed['style']:
                                         cell_data['userEnteredFormat']['textFormat']['fontSize'] = parsed['style']['fontSize']
                                     
-                                    # 글자 색상
+                                    # Font color
                                     if 'foregroundColor' in parsed['style']:
                                         cell_data['userEnteredFormat']['textFormat']['foregroundColor'] = parsed['style']['foregroundColor']
                                     
-                                    # 배경 색상
+                                    # Background color
                                     if 'backgroundColor' in parsed['style']:
                                         cell_data['userEnteredFormat']['backgroundColor'] = parsed['style']['backgroundColor']
                                     
-                                    # 정렬
+                                    # Alignment
                                     if 'horizontalAlignment' in parsed['style']:
                                         cell_data['userEnteredFormat']['horizontalAlignment'] = parsed['style']['horizontalAlignment']
                             
@@ -508,7 +508,7 @@ class GoogleSheets:
 
                     requests.append(cell_request)
 
-                    # 셀 병합 요청
+                    # Create cell merge request
                     if merge:
                         merge_request = {
                             'mergeCells': {
@@ -562,10 +562,10 @@ class GoogleSheets:
             }
 
     def delete_rows(self, spreadsheet_id: str, sheet_name: str, start_index: int, end_index: int) -> Dict[str, Any]:
-        """시트의 행을 삭제합니다."""
+        """Delete rows from a sheet."""
         try:
             logger.info(f"Deleting rows {start_index} to {end_index} from sheet '{sheet_name}'")
-            # 시트 ID 가져오기
+            # Get sheet ID
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
             sheet_id = None
             for sheet in spreadsheet.get('sheets', []):
@@ -619,10 +619,10 @@ class GoogleSheets:
             }
 
     def delete_columns(self, spreadsheet_id: str, sheet_name: str, start_index: int, end_index: int) -> Dict[str, Any]:
-        """시트의 열을 삭제합니다."""
+        """Delete columns from a sheet."""
         try:
             logger.info(f"Deleting columns {start_index} to {end_index} from sheet '{sheet_name}'")
-            # 시트 ID 가져오기
+            # Get sheet ID
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
             sheet_id = None
             for sheet in spreadsheet.get('sheets', []):
@@ -676,21 +676,21 @@ class GoogleSheets:
             }
 
     def create_chart(self, chart_type: str, range_name: str, sheet_name: str, spreadsheet_id: str, title: str = None) -> Dict[str, Any]:
-        """차트를 생성합니다.
+        """Create a chart.
         
         Args:
-            chart_type: 차트 유형 ('LINE', 'COLUMN', 'PIE', 'SCATTER', 'BAR')
-            range_name: 데이터 범위 (예: 'A1:B10')
-            sheet_name: 시트 이름
-            spreadsheet_id: 스프레드시트 ID
-            title: 차트 제목 (선택사항)
+            chart_type: Chart type ('LINE', 'COLUMN', 'PIE', 'SCATTER', 'BAR')
+            range_name: Data range (e.g., 'A1:B10')
+            sheet_name: Sheet name
+            spreadsheet_id: Spreadsheet ID
+            title: Chart title (optional)
         """
         try:
-            # sheet_name에서 따옴표 제거
+            # Remove quotes from sheet_name
             sheet_name = sheet_name.strip('"')
             logger.info(f"Creating chart in sheet '{sheet_name}'")
             
-            # 시트 ID 가져오기
+            # Get sheet ID
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
             sheet_id = None
             for sheet in spreadsheet.get('sheets', []):
@@ -705,10 +705,10 @@ class GoogleSheets:
                     'error': f"Sheet '{sheet_name}' not found"
                 }
 
-            # 범위 파싱
+            # Parse range_name
             range_info = self._parse_range(range_name)
 
-            # 차트 요청 생성
+            # Create chart request
             chart_request = {
                 'addChart': {
                     'chart': {
@@ -748,7 +748,7 @@ class GoogleSheets:
                 }
             }
 
-            # 모든 계열 추가
+            # Add all series
             for i in range(1, range_info['endColumnIndex'] - range_info['startColumnIndex']):
                 series = {
                     'series': {
@@ -797,10 +797,10 @@ class GoogleSheets:
             }
 
     def update_chart(self, spreadsheet_id: str, sheet_name: str, chart_id: int, chart_config: Dict[str, Any]) -> Dict[str, Any]:
-        """기존 차트를 업데이트합니다."""
+        """Update an existing chart."""
         try:
             logger.info(f"Updating chart {chart_id} in sheet '{sheet_name}'")
-            # 시트 ID 가져오기
+            # Get sheet ID
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
             sheet_id = None
             for sheet in spreadsheet.get('sheets', []):
@@ -815,7 +815,7 @@ class GoogleSheets:
                     'error': f"Sheet '{sheet_name}' not found"
                 }
 
-            # 차트 업데이트 요청 생성
+            # Create chart update request
             chart_request = {
                 'updateChartSpec': {
                     'chartId': chart_id,
@@ -854,7 +854,7 @@ class GoogleSheets:
                 }
             }
 
-            # 차트 옵션 적용
+            # Apply chart options
             if 'options' in chart_config:
                 options = chart_config['options']
                 if 'width' in options:
@@ -919,7 +919,7 @@ class GoogleSheets:
             }
 
     def delete_chart(self, spreadsheet_id: str, sheet_name: str, chart_id: int) -> Dict[str, Any]:
-        """차트를 삭제합니다."""
+        """Delete a chart."""
         try:
             logger.info(f"Deleting chart {chart_id} from sheet '{sheet_name}'")
             body = {
@@ -957,19 +957,19 @@ class GoogleSheets:
             }
 
     def add_sheet(self, spreadsheet_id: str, sheet_name: str) -> Dict[str, Any]:
-        """새로운 시트를 추가합니다."""
+        """Add a new sheet."""
         try:
             logger.info(f"Adding new sheet '{sheet_name}' to spreadsheet")
             
-            # 새 시트 추가 요청
+            # Create new sheet request
             body = {
                 'requests': [{
                     'addSheet': {
                         'properties': {
                             'title': sheet_name,
                             'gridProperties': {
-                                'rowCount': 1000,  # 기본 행 수
-                                'columnCount': 26  # 기본 열 수 (A-Z)
+                                'rowCount': 1000,  # Default row count
+                                'columnCount': 26  # Default column count (A-Z)
                             }
                         }
                     }
@@ -989,7 +989,7 @@ class GoogleSheets:
                     'details': result
                 }
             
-            # 새로 생성된 시트의 ID 가져오기
+            # Get ID of newly created sheet
             new_sheet_id = result['replies'][0]['addSheet']['properties']['sheetId']
             
             logger.info(f"Successfully added new sheet '{sheet_name}' with ID: {new_sheet_id}")
@@ -1009,52 +1009,52 @@ class GoogleSheets:
             }
 
     def update_cell_format(self, spreadsheet_id: str, sheet_name: str, range_name: str, format: Dict[str, Any]) -> Dict[str, Any]:
-        """셀의 서식 스타일을 변경합니다.
+        """Change cell format style.
         
         Args:
-            spreadsheet_id: 스프레드시트 ID
-            sheet_name: 시트 이름
-            range_name: 범위 (예: 'A1:B5')
-            format: 서식 설정 정보. 다음 형식을 가집니다:
+            spreadsheet_id: Spreadsheet ID
+            sheet_name: Sheet name
+            range_name: Range (e.g., 'A1:B5')
+            format: Format setting information. It has the following format:
                 {
-                    'textFormat': {  # 텍스트 서식
-                        'fontFamily': str,  # 글꼴
-                        'fontSize': int,  # 글자 크기
-                        'bold': bool,  # 굵게
-                        'italic': bool,  # 기울임
-                        'strikethrough': bool,  # 취소선
-                        'underline': bool,  # 밑줄
-                        'foregroundColor': {  # 글자 색상
+                    'textFormat': {  # Text format
+                        'fontFamily': str,  # Font
+                        'fontSize': int,  # Font size
+                        'bold': bool,  # Bold
+                        'italic': bool,  # Italic
+                        'strikethrough': bool,  # Strikethrough
+                        'underline': bool,  # Underline
+                        'foregroundColor': {  # Font color
                             'red': float,  # 0.0 ~ 1.0
                             'green': float,
                             'blue': float,
                             'alpha': float
                         }
                     },
-                    'backgroundColor': {  # 배경 색상
+                    'backgroundColor': {  # Background color
                         'red': float,
                         'green': float,
                         'blue': float,
                         'alpha': float
                     },
-                    'horizontalAlignment': str,  # 가로 정렬 ('LEFT', 'CENTER', 'RIGHT')
-                    'verticalAlignment': str,  # 세로 정렬 ('TOP', 'MIDDLE', 'BOTTOM')
-                    'padding': {  # 여백
-                        'top': int,  # 위쪽 여백
-                        'right': int,  # 오른쪽 여백
-                        'bottom': int,  # 아래쪽 여백
-                        'left': int  # 왼쪽 여백
+                    'horizontalAlignment': str,  # Horizontal alignment ('LEFT', 'CENTER', 'RIGHT')
+                    'verticalAlignment': str,  # Vertical alignment ('TOP', 'MIDDLE', 'BOTTOM')
+                    'padding': {  # Padding
+                        'top': int,  # Top padding
+                        'right': int,  # Right padding
+                        'bottom': int,  # Bottom padding
+                        'left': int  # Left padding
                     },
-                    'wrapText': bool,  # 자동 줄바꿈
-                    'textRotation': {  # 텍스트 회전
-                        'angle': int  # 회전 각도 (0 ~ 360)
+                    'wrapText': bool,  # Auto wrap text
+                    'textRotation': {  # Text rotation
+                        'angle': int  # Rotation angle (0 ~ 360)
                     }
                 }
         """
         try:
             logger.info(f"Updating cell format in sheet '{sheet_name}' range '{range_name}'")
             
-            # 시트 ID 가져오기
+            # Get sheet ID
             spreadsheet = self.service.spreadsheets().get(spreadsheetId=spreadsheet_id).execute()
             sheet_id = None
             for sheet in spreadsheet.get('sheets', []):
@@ -1069,10 +1069,10 @@ class GoogleSheets:
                     'error': f"Sheet '{sheet_name}' not found"
                 }
 
-            # 범위 파싱
+            # Parse range_name
             range_info = self._parse_range(range_name)
             
-            # 서식 업데이트 요청 생성
+            # Create format update request
             format_request = {
                 'repeatCell': {
                     'range': {
@@ -1089,7 +1089,7 @@ class GoogleSheets:
                 }
             }
 
-            # 서식 설정 적용
+            # Apply format settings
             if 'textFormat' in format:
                 format_request['repeatCell']['cell']['userEnteredFormat']['textFormat'] = format['textFormat']
             if 'backgroundColor' in format:
@@ -1136,42 +1136,42 @@ class GoogleSheets:
             }
 
 def create_chart(chart_type: str, range_name: str, sheet_name: str, spreadsheet_id: str, title: str = None) -> Dict[str, Any]:
-    """차트를 생성합니다.
+    """Create a chart.
     
     Args:
-        chart_type: 차트 유형 ('LINE', 'COLUMN', 'PIE', 'SCATTER', 'BAR')
-        range_name: 데이터 범위 (예: 'A1:B10')
-        sheet_name: 시트 이름
-        spreadsheet_id: 스프레드시트 ID
-        title: 차트 제목 (선택사항)
+        chart_type: Chart type ('LINE', 'COLUMN', 'PIE', 'SCATTER', 'BAR')
+        range_name: Data range (e.g., 'A1:B10')
+        sheet_name: Sheet name
+        spreadsheet_id: Spreadsheet ID
+        title: Chart title (optional)
     """
     auth = GoogleAuth()
     sheets = GoogleSheets(auth)
     return sheets.create_chart(chart_type, range_name, sheet_name, spreadsheet_id, title)
 
 def duplicate_sheet(values: List[List[Any]], range_name: str, sheet_name: str, spreadsheet_id: str, source_sheet_id: int, new_name: str) -> Dict[str, Any]:
-    """기존 시트를 복제하여 새 시트를 생성합니다.
+    """Create a new sheet by duplicating an existing one.
     
     Args:
-        values: 시트 데이터 (사용되지 않음)
-        range_name: 데이터 범위 (사용되지 않음)
-        sheet_name: 시트 이름 (사용되지 않음)
-        spreadsheet_id: 스프레드시트 ID
-        source_sheet_id: 복제할 원본 시트 ID
-        new_name: 새 시트 이름
+        values: Sheet data (not used)
+        range_name: Data range (not used)
+        sheet_name: Sheet name (not used)
+        spreadsheet_id: Spreadsheet ID
+        source_sheet_id: ID of the original sheet to copy
+        new_name: New sheet name
     """
     auth = GoogleAuth()
     sheets = GoogleSheets(auth)
     return sheets.duplicate_sheet(spreadsheet_id, source_sheet_id, new_name)
 
 def add_sheet(values: List[List[Any]], range_name: str, sheet_name: str, spreadsheet_id: str) -> Dict[str, Any]:
-    """새로운 시트를 추가합니다.
+    """Add a new sheet.
     
     Args:
-        values: 시트 데이터 (사용되지 않음)
-        range_name: 데이터 범위 (사용되지 않음)
-        sheet_name: 시트 이름
-        spreadsheet_id: 스프레드시트 ID
+        values: Sheet data (not used)
+        range_name: Data range (not used)
+        sheet_name: Sheet name
+        spreadsheet_id: Spreadsheet ID
     """
     auth = GoogleAuth()
     sheets = GoogleSheets(auth)

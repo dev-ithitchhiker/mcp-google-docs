@@ -14,7 +14,7 @@ class GoogleDrive:
         self.folder_id = auth.config.folder_id
 
     def list_files(self) -> List[Dict[str, Any]]:
-        """지정된 폴더의 파일 목록을 조회합니다."""
+        """List files in the specified folder."""
         try:
             results = self.service.files().list(
                 q=f"'{self.folder_id}' in parents and trashed=false",
@@ -25,7 +25,7 @@ class GoogleDrive:
             
             if not files:
                 logger.info("Folder is empty")
-                return [{"message": "폴더가 비어있습니다."}]
+                return [{"message": "Folder is empty"}]
                 
             logger.info(f"Found {len(files)} files in folder")
             return files
@@ -34,7 +34,7 @@ class GoogleDrive:
             return []
 
     def copy_file(self, file_id: str, new_name: str) -> Dict[str, Any]:
-        """파일을 복사합니다."""
+        """Copy a file."""
         try:
             file_metadata = {'name': new_name}
             result = self.service.files().copy(
@@ -48,7 +48,7 @@ class GoogleDrive:
             return {}
 
     def rename_file(self, file_id: str, new_name: str) -> Dict[str, Any]:
-        """파일 이름을 변경합니다."""
+        """Rename a file."""
         try:
             file_metadata = {'name': new_name}
             result = self.service.files().update(
@@ -62,10 +62,10 @@ class GoogleDrive:
             return {}
 
     def create_spreadsheet(self, title: str) -> Dict[str, Any]:
-        """빈 스프레드시트를 생성합니다."""
+        """Create an empty spreadsheet."""
         try:
             logger.info(f"Creating new spreadsheet with title: {title}")
-            # 스프레드시트 생성
+            # Create spreadsheet
             spreadsheet = {
                 'properties': {
                     'title': title
@@ -79,7 +79,7 @@ class GoogleDrive:
                 ]
             }
             
-            # 스프레드시트 생성
+            # Create spreadsheet
             spreadsheet = self.sheets_service.spreadsheets().create(
                 body=spreadsheet,
                 fields='spreadsheetId'
@@ -89,17 +89,17 @@ class GoogleDrive:
             logger.info(f"Created spreadsheet with ID: {spreadsheet_id}")
             
             try:
-                # 생성된 스프레드시트의 현재 부모 폴더 정보 가져오기
+                # Get current parent folder information of the created spreadsheet
                 file = self.service.files().get(
                     fileId=spreadsheet_id,
                     fields='parents'
                 ).execute()
                 
-                # 이전 부모 폴더들 제거하고 새 폴더로 이동
+                # Remove previous parent folders and move to new folder
                 previous_parents = ",".join(file.get('parents', []))
                 
                 if previous_parents:
-                    # 파일을 새 폴더로 이동
+                    # Move file to new folder
                     self.service.files().update(
                         fileId=spreadsheet_id,
                         addParents=self.folder_id,
@@ -108,7 +108,7 @@ class GoogleDrive:
                     ).execute()
                     logger.info(f"Moved spreadsheet {spreadsheet_id} to folder {self.folder_id}")
                 else:
-                    # 부모 폴더가 없는 경우 새 폴더 추가
+                    # Add to new folder if no parent folder exists
                     self.service.files().update(
                         fileId=spreadsheet_id,
                         addParents=self.folder_id,
@@ -117,7 +117,7 @@ class GoogleDrive:
                     logger.info(f"Added spreadsheet {spreadsheet_id} to folder {self.folder_id}")
             except Exception as e:
                 logger.warning(f"Failed to move spreadsheet to folder: {str(e)}")
-                # 폴더 이동 실패해도 스프레드시트는 생성되었으므로 계속 진행
+                # Continue even if folder move fails since spreadsheet is created
             
             result = {
                 'spreadsheetId': spreadsheet_id,
@@ -130,10 +130,10 @@ class GoogleDrive:
             return {}
 
     def create_spreadsheet_from_template(self, template_id: str, title: str) -> Dict[str, Any]:
-        """템플릿을 기반으로 새 스프레드시트를 생성합니다."""
+        """Create a new spreadsheet from a template."""
         try:
             logger.info(f"Creating new spreadsheet from template {template_id} with title: {title}")
-            # 템플릿 파일 복사
+            # Copy template file
             file_metadata = {
                 'name': title,
                 'parents': [self.folder_id]
@@ -157,7 +157,7 @@ class GoogleDrive:
             return {}
 
     def create_spreadsheet_from_existing(self, source_id: str, title: str) -> Dict[str, Any]:
-        """기존 스프레드시트를 복사하여 새 스프레드시트를 생성합니다."""
+        """Create a new spreadsheet by copying an existing one."""
         try:
             logger.info(f"Creating new spreadsheet from existing {source_id} with title: {title}")
             file_metadata = {
