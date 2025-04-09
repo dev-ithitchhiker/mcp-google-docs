@@ -8,7 +8,11 @@ from config import Config
 
 SCOPES = [
     'https://www.googleapis.com/auth/spreadsheets',
-    'https://www.googleapis.com/auth/drive'
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/drive.readonly',
+    'https://www.googleapis.com/auth/presentations',
+    'https://www.googleapis.com/auth/documents'
 ]
 
 class GoogleAuth:
@@ -22,6 +26,10 @@ class GoogleAuth:
         if self._credentials is None:
             self._credentials = self._load_or_refresh_credentials()
         return self._credentials
+
+    def authorize(self):
+        """Authorize the application and get credentials."""
+        return self.get_credentials()
 
     def _load_or_refresh_credentials(self) -> Credentials:
         creds = None
