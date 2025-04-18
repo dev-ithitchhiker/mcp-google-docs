@@ -57,7 +57,7 @@ def rename_file(file_id: str, new_name: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def create_spreadsheet(title: str) -> Dict[str, Any]:
-    """Create an empty spreadsheet.
+    """Create an empty google sheets spreadsheet.
     
     Args:
         title: Title of the new spreadsheet
@@ -78,7 +78,7 @@ def create_spreadsheet(title: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def create_spreadsheet_from_template(template_id: str, title: str) -> Dict[str, Any]:
-    """Create a new spreadsheet from a template.
+    """Create a new google sheets spreadsheet from a template.
 
     Args:
         template_id: Template ID
@@ -97,7 +97,7 @@ def create_spreadsheet_from_template(template_id: str, title: str) -> Dict[str, 
 
 @mcp.tool()
 def create_spreadsheet_from_existing(source_id: str, title: str) -> Dict[str, Any]:
-    """Create a new spreadsheet by copying an existing one."""
+    """Create a new google sheets spreadsheet by copying an existing one."""
     global current_spreadsheet_id
     result = drive.create_spreadsheet_from_existing(source_id, title)
     if result:
@@ -111,7 +111,7 @@ def create_spreadsheet_from_existing(source_id: str, title: str) -> Dict[str, An
 
 @mcp.tool()
 def list_sheets(spreadsheet_id: str = None) -> List[Dict[str, Any]]:
-    """List sheets in a spreadsheet."""
+    """List sheets in a google sheets spreadsheet."""
     global current_spreadsheet_id
     if spreadsheet_id is None:
         spreadsheet_id = current_spreadsheet_id
@@ -123,13 +123,13 @@ def list_sheets(spreadsheet_id: str = None) -> List[Dict[str, Any]]:
 
 @mcp.tool()
 def add_sheet(spreadsheet_id: str, sheet_name: str) -> Dict[str, Any]:
-    """Create a new sheet."""
+    """Create a new sheet in a google sheets spreadsheet."""
     global current_spreadsheet_id
     return sheets.add_sheet(spreadsheet_id, sheet_name)
 
 @mcp.tool()
 def duplicate_sheet(spreadsheet_id: str, sheet_id: int, new_name: str) -> Dict[str, Any]:
-    """Create a new sheet by duplicating an existing one.
+    """Create a new sheet in a google sheets spreadsheet by duplicating an existing one.
     
     Args:
         values: Sheet data
@@ -150,7 +150,7 @@ def duplicate_sheet(spreadsheet_id: str, sheet_id: int, new_name: str) -> Dict[s
 
 @mcp.tool()
 def rename_sheet(spreadsheet_id: str, sheet_id: int, new_name: str) -> Dict[str, Any]:
-    """Rename a sheet."""
+    """Rename a sheet in a google sheets spreadsheet."""
     global current_spreadsheet_id
     if spreadsheet_id is None:
         spreadsheet_id = current_spreadsheet_id
@@ -162,7 +162,7 @@ def rename_sheet(spreadsheet_id: str, sheet_id: int, new_name: str) -> Dict[str,
 
 @mcp.tool()
 def get_sheet_data(spreadsheet_id: str, sheet_name: str, range_name: str) -> List[List[Any]]:
-    """Get data from a sheet."""
+    """Get data from a sheet in a google sheets spreadsheet."""
     global current_spreadsheet_id
     if spreadsheet_id is None:
         spreadsheet_id = current_spreadsheet_id
@@ -174,7 +174,7 @@ def get_sheet_data(spreadsheet_id: str, sheet_name: str, range_name: str) -> Lis
 
 @mcp.tool()
 def add_rows(spreadsheet_id: str, sheet_name: str, values: List[List[Any]]) -> Dict[str, Any]:
-    """Add rows to a sheet."""
+    """Add rows to a sheet in a google sheets spreadsheet."""
     global current_spreadsheet_id
     if spreadsheet_id is None:
         spreadsheet_id = current_spreadsheet_id
@@ -186,7 +186,7 @@ def add_rows(spreadsheet_id: str, sheet_name: str, values: List[List[Any]]) -> D
 
 @mcp.tool()
 def add_columns(spreadsheet_id: str, sheet_name: str, values: List[List[Any]]) -> Dict[str, Any]:
-    """Add columns to a sheet."""
+    """Add columns to a sheet in a google sheets spreadsheet."""
     global current_spreadsheet_id
     if spreadsheet_id is None:
         spreadsheet_id = current_spreadsheet_id
@@ -198,7 +198,7 @@ def add_columns(spreadsheet_id: str, sheet_name: str, values: List[List[Any]]) -
 
 @mcp.tool()
 def update_cells(spreadsheet_id: str, sheet_name: str, range_name: str, values: List[List[Any]]) -> Dict[str, Any]:
-    """Update cells in a sheet. Supports HTML tags and formatting.
+    """Update cells in a sheet in a google sheets spreadsheet. Supports HTML tags and formatting.
         
         Args:
             values: Values to update
@@ -305,7 +305,7 @@ def batch_update_cells(spreadsheet_id: str, sheet_name: str, updates: List[Dict[
 
 @mcp.tool()
 def delete_rows(spreadsheet_id: str, sheet_name: str, start_index: int, end_index: int) -> Dict[str, Any]:
-    """Delete rows from a sheet."""
+    """Delete rows from a google sheets spreadsheet."""
     global current_spreadsheet_id
     if spreadsheet_id is None:
         spreadsheet_id = current_spreadsheet_id
@@ -317,7 +317,7 @@ def delete_rows(spreadsheet_id: str, sheet_name: str, start_index: int, end_inde
 
 @mcp.tool()
 def delete_columns(spreadsheet_id: str, sheet_name: str, start_index: int, end_index: int) -> Dict[str, Any]:
-    """Delete columns from a sheet.
+    """Delete columns from a sheet in a google sheets spreadsheet.
 
     Args:
         spreadsheet_id: Spreadsheet ID
@@ -336,7 +336,7 @@ def delete_columns(spreadsheet_id: str, sheet_name: str, start_index: int, end_i
 
 @mcp.tool()
 def create_chart(chart_type: str, range_name: str, sheet_name: str, spreadsheet_id: str, title: str = None) -> Dict[str, Any]:
-    """Create a chart.
+    """Create a chart in a google sheets spreadsheet.
         
         Args:
             chart_type: Chart type ('LINE', 'COLUMN', 'PIE', 'SCATTER', 'BAR')
@@ -357,7 +357,7 @@ def create_chart(chart_type: str, range_name: str, sheet_name: str, spreadsheet_
 
 @mcp.tool()
 def create_presentation(title: str) -> Dict[str, Any]:
-    """Create a new Google Slides presentation.
+    """Create a new google slides presentation.
     
     Args:
         title: Title of the new presentation
@@ -379,7 +379,7 @@ def create_presentation(title: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def add_slide_to_presentation(presentation_id: str, title: str, content: str) -> Dict[str, Any]:
-    """Add a new slide to the presentation."""
+    """Add a new slide to a google slides presentation."""
     try:
         # Handle content formatting
         if isinstance(content, str):
@@ -422,7 +422,7 @@ def add_image_to_slide(presentation_id: str, slide_id: str, image_url: str,
                       x: float = 100, y: float = 100,
                       width: float = 400, height: float = 300,
                       rotation: float = 0.0) -> Dict[str, Any]:
-    """Add an image to a specific slide.
+    """Add an image to a specific slide of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -469,7 +469,7 @@ def add_image_to_slide(presentation_id: str, slide_id: str, image_url: str,
 
 @mcp.tool()
 def get_presentation_details(presentation_id: str) -> Dict[str, Any]:
-    """Get presentation details.
+    """Get presentation details of a google slides presentation.
     
     Args:
         presentation_id: ID of the presentation
@@ -487,7 +487,7 @@ def get_presentation_details(presentation_id: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def delete_presentation(presentation_id: str) -> Dict[str, Any]:
-    """Delete a presentation.
+    """Delete a google slides presentation.
     
     Args:
         presentation_id: ID of the presentation
@@ -505,7 +505,7 @@ def delete_presentation(presentation_id: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def create_document(title: str) -> Dict[str, Any]:
-    """Create a new Google Doc.
+    """Create a new google docs document.
     
     Args:
         title: Title of the new document
@@ -523,19 +523,61 @@ def create_document(title: str) -> Dict[str, Any]:
     }
 
 @mcp.tool()
-def insert_text_to_document(document_id: str, text: str, index: int = 1) -> Dict[str, Any]:
-    """Insert text into a document.
+def insert_text_to_document(document_id: str, text: str, index: int = 1,
+                          font_family: str = None, font_size: float = None,
+                          bold: bool = None, italic: bool = None,
+                          underline: bool = None, strikethrough: bool = None,
+                          foreground_color: str = None, background_color: str = None,
+                          alignment: str = None, line_spacing: float = None,
+                          space_before: float = None, space_after: float = None,
+                          first_line_indent: float = None, bullet: bool = None,
+                          numbered_list: bool = None) -> Dict[str, Any]:
+    """Insert text into a google docs document with formatting options.
     
     Args:
         document_id: ID of the document
         text: Text to insert
         index: Index of the text to insert
+        font_family: Font family name
+        font_size: Font size in points
+        bold: Whether to make text bold
+        italic: Whether to make text italic
+        underline: Whether to underline text
+        strikethrough: Whether to strikethrough text
+        foreground_color: Text color in hex format (e.g., '#FF0000')
+        background_color: Background color in hex format (e.g., '#FFFF00')
+        alignment: Text alignment ('START', 'CENTER', 'END', 'JUSTIFIED')
+        line_spacing: Line spacing multiplier
+        space_before: Space before paragraph in points
+        space_after: Space after paragraph in points
+        first_line_indent: First line indent in points
+        bullet: Whether to add bullet points
+        numbered_list: Whether to add numbered list
     """
-    success = docs.insert_text(document_id, text, index)
+    success = docs.insert_text(
+        document_id=document_id,
+        text=text,
+        index=index,
+        font_family=font_family,
+        font_size=font_size,
+        bold=bold,
+        italic=italic,
+        underline=underline,
+        strikethrough=strikethrough,
+        foreground_color=foreground_color,
+        background_color=background_color,
+        alignment=alignment,
+        line_spacing=line_spacing,
+        space_before=space_before,
+        space_after=space_after,
+        first_line_indent=first_line_indent,
+        bullet=bullet,
+        numbered_list=numbered_list
+    )
     if success:
         return {
             "success": True,
-            "message": "Inserted text into document"
+            "message": "Inserted text into document with formatting"
         }
     return {
         "success": False,
@@ -544,7 +586,7 @@ def insert_text_to_document(document_id: str, text: str, index: int = 1) -> Dict
 
 @mcp.tool()
 def insert_heading_to_document(document_id: str, text: str, level: int = 1, index: int = 1) -> Dict[str, Any]:
-    """Insert a heading into a document.
+    """Insert a heading into a google docs document.
     
     Args:
         document_id: ID of the document
@@ -564,7 +606,7 @@ def insert_heading_to_document(document_id: str, text: str, level: int = 1, inde
 
 @mcp.tool()
 def insert_image_to_document(document_id: str, image_url: str, index: int = 1) -> Dict[str, Any]:
-    """Insert an image into a document.
+    """Insert an image into a google docs document.
     
     Args:
         document_id: ID of the document
@@ -584,7 +626,7 @@ def insert_image_to_document(document_id: str, image_url: str, index: int = 1) -
 
 @mcp.tool()
 def get_document_details(document_id: str) -> Dict[str, Any]:
-    """Get document details.
+    """Get document details of a google docs document.
     
     Args:
         document_id: ID of the document
@@ -602,7 +644,7 @@ def get_document_details(document_id: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def delete_document(document_id: str) -> Dict[str, Any]:
-    """Delete a document."""
+    """Delete a google docs document."""
     success = docs.delete_document(document_id)
     if success:
         return {
@@ -616,7 +658,7 @@ def delete_document(document_id: str) -> Dict[str, Any]:
 
 @mcp.tool()
 def create_table_in_document(document_id: str, rows: int, columns: int, index: int = 1) -> Dict[str, Any]:
-    """Create a table in a document.
+    """Create a table in a google docs document.
     
     Args:
         document_id: ID of the document
@@ -637,7 +679,7 @@ def create_table_in_document(document_id: str, rows: int, columns: int, index: i
 
 @mcp.tool()
 def search_slide_elements(presentation_id: str, slide_id: str, element_type: str = None) -> Dict[str, Any]:
-    """Search for elements in a specific slide.
+    """Search for elements in a specific slide of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -669,7 +711,7 @@ def update_text_style(presentation_id: str, slide_id: str, element_id: str,
                      font_family: str = None, font_size: float = None,
                      font_weight: str = None, font_style: str = None,
                      foreground_color: str = None, background_color: str = None) -> Dict[str, Any]:
-    """Update text style of an element.
+    """Update text style of an element in a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -718,7 +760,7 @@ def update_shape_style(presentation_id: str, slide_id: str, element_id: str,
                       x: float = None, y: float = None,
                       fill_color: str = None, border_color: str = None,
                       border_width: float = None) -> Dict[str, Any]:
-    """Update shape style (size, position, colors, border).
+    """Update shape style (size, position, colors, border) of an element in a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -765,7 +807,7 @@ def update_shape_style(presentation_id: str, slide_id: str, element_id: str,
 
 @mcp.tool()
 def delete_slide_element(presentation_id: str, slide_id: str, element_id: str) -> Dict[str, Any]:
-    """Delete an element from a slide.
+    """Delete an element from a slide of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -796,7 +838,7 @@ def delete_slide_element(presentation_id: str, slide_id: str, element_id: str) -
 def add_shape_to_slide(presentation_id: str, slide_id: str, shape_type: str, x: float, y: float,
                       width: float, height: float, fill_color: str = None,
                       border_color: str = None, border_width: float = None) -> Dict[str, Any]:
-    """Add a shape to a slide.
+    """Add a shape to a slide of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -848,7 +890,7 @@ def add_shape_to_slide(presentation_id: str, slide_id: str, shape_type: str, x: 
 def add_line_to_slide(presentation_id: str, slide_id: str, start_x: float, start_y: float,
                      end_x: float, end_y: float, line_color: str = '#000000',
                      line_width: float = 1.0, line_type: str = 'STRAIGHT') -> Dict[str, Any]:
-    """Add a line to a slide.
+    """Add a line to a slide of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -898,7 +940,7 @@ def add_line_to_slide(presentation_id: str, slide_id: str, start_x: float, start
 def update_slide_background(presentation_id: str, slide_id: str,
                           background_color: str = None,
                           background_image_url: str = None) -> Dict[str, Any]:
-    """Update slide background with color or image.
+    """Update slide background with color or image of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -931,7 +973,7 @@ def update_slide_background(presentation_id: str, slide_id: str,
 @mcp.tool()
 def update_slide_layout(presentation_id: str, slide_id: str,
                        layout_type: str) -> Dict[str, Any]:
-    """Update slide layout.
+    """Update slide layout of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -963,7 +1005,7 @@ def update_slide_layout(presentation_id: str, slide_id: str,
 def update_slide_transition(presentation_id: str, slide_id: str,
                           transition_type: str = 'FADE',
                           duration: str = 'SLOW') -> Dict[str, Any]:
-    """Update slide transition effect.
+    """Update slide transition effect of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -996,7 +1038,7 @@ def update_slide_transition(presentation_id: str, slide_id: str,
 @mcp.tool()
 def add_slide_notes(presentation_id: str, slide_id: str,
                    notes_text: str) -> Dict[str, Any]:
-    """Add or update speaker notes for a slide.
+    """Add or update speaker notes for a slide of a google slides presentation.
     
     Args:
         presentation_id (str): Google Slides presentation ID
@@ -1023,6 +1065,466 @@ def add_slide_notes(presentation_id: str, slide_id: str,
             'success': False,
             'message': str(e)
         }
+
+@mcp.tool()
+def update_text_style_in_document(document_id: str, start_index: int, end_index: int,
+                                font_family: str = None, font_size: float = None,
+                                bold: bool = None, italic: bool = None,
+                                underline: bool = None, strikethrough: bool = None,
+                                foreground_color: str = None, background_color: str = None) -> Dict[str, Any]:
+    """Update text style in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        start_index: Start index of the text range
+        end_index: End index of the text range
+        font_family: Font family name
+        font_size: Font size in points
+        bold: Whether to make text bold
+        italic: Whether to make text italic
+        underline: Whether to underline text
+        strikethrough: Whether to strikethrough text
+        foreground_color: Text color in hex format (e.g., '#FF0000')
+        background_color: Background color in hex format (e.g., '#FFFF00')
+    """
+    success = docs.update_text_style(
+        document_id=document_id,
+        start_index=start_index,
+        end_index=end_index,
+        font_family=font_family,
+        font_size=font_size,
+        bold=bold,
+        italic=italic,
+        underline=underline,
+        strikethrough=strikethrough,
+        foreground_color=foreground_color,
+        background_color=background_color
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Text style updated successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to update text style"
+    }
+
+@mcp.tool()
+def update_paragraph_style_in_document(document_id: str, start_index: int, end_index: int,
+                                     alignment: str = None, line_spacing: float = None,
+                                     space_before: float = None, space_after: float = None,
+                                     first_line_indent: float = None, bullet: bool = None,
+                                     numbered_list: bool = None) -> Dict[str, Any]:
+    """Update paragraph style in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        start_index: Start index of the paragraph range
+        end_index: End index of the paragraph range
+        alignment: Text alignment ('START', 'CENTER', 'END', 'JUSTIFIED')
+        line_spacing: Line spacing multiplier
+        space_before: Space before paragraph in points
+        space_after: Space after paragraph in points
+        first_line_indent: First line indent in points
+        bullet: Whether to add bullet points
+        numbered_list: Whether to add numbered list
+    """
+    success = docs.update_paragraph_style(
+        document_id=document_id,
+        start_index=start_index,
+        end_index=end_index,
+        alignment=alignment,
+        line_spacing=line_spacing,
+        space_before=space_before,
+        space_after=space_after,
+        first_line_indent=first_line_indent,
+        bullet=bullet,
+        numbered_list=numbered_list
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Paragraph style updated successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to update paragraph style"
+    }
+
+@mcp.tool()
+def insert_page_break_in_document(document_id: str, index: int) -> Dict[str, Any]:
+    """Insert a page break in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        index: Index where to insert the page break
+    """
+    success = docs.insert_page_break(document_id, index)
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Page break inserted successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to insert page break"
+    }
+
+@mcp.tool()
+def insert_horizontal_rule_in_document(document_id: str, index: int) -> Dict[str, Any]:
+    """Insert a horizontal rule in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        index: Index where to insert the horizontal rule
+    """
+    success = docs.insert_horizontal_rule(document_id, index)
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Horizontal rule inserted successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to insert horizontal rule"
+    }
+
+@mcp.tool()
+def update_table_cell_content(document_id: str, table_id: str, row_index: int, column_index: int, content: str) -> Dict[str, Any]:
+    """Update content of a specific table cell.
+    
+    Args:
+        document_id: Document ID
+        table_id: Table ID
+        row_index: Row index (0-based)
+        column_index: Column index (0-based)
+        content: Content to insert
+    """
+    success = docs.update_table_cell_content(
+        document_id=document_id,
+        table_id=table_id,
+        row_index=row_index,
+        column_index=column_index,
+        content=content
+    )
+
+    if success:
+        return {
+            'success': True,
+            'message': 'Updated table cell content'
+        }
+    return {
+        'success': False,
+        'message': 'Failed to update table cell content'
+    }
+
+@mcp.tool()
+def update_table_cell_style(document_id: str, table_id: str, row_index: int, column_index: int,
+                          background_color: str = None, border_color: str = None,
+                          border_width: float = None, padding: Dict[str, float] = None) -> Dict[str, Any]:
+    """Update style of a specific table cell in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        table_id: Table ID
+        row_index: Row index (0-based)
+        column_index: Column index (0-based)
+        background_color: Background color in hex format
+        border_color: Border color in hex format
+        border_width: Border width in points
+        padding: Dictionary with 'top', 'right', 'bottom', 'left' padding values
+    """
+    success = docs.update_table_cell_style(
+        document_id=document_id,
+        table_id=table_id,
+        row_index=row_index,
+        column_index=column_index,
+        background_color=background_color,
+        border_color=border_color,
+        border_width=border_width,
+        padding=padding
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Table cell style updated successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to update table cell style"
+    }
+
+@mcp.tool()
+def update_table_row_style(document_id: str, table_id: str, row_index: int,
+                         background_color: str = None, height: float = None) -> Dict[str, Any]:
+    """Update style of a table row in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        table_id: Table ID
+        row_index: Row index (0-based)
+        background_color: Background color in hex format
+        height: Row height in points
+    """
+    success = docs.update_table_row_style(
+        document_id=document_id,
+        table_id=table_id,
+        row_index=row_index,
+        background_color=background_color,
+        height=height
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Table row style updated successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to update table row style"
+    }
+
+@mcp.tool()
+def update_table_column_style(document_id: str, table_id: str, column_index: int,
+                            width: float = None) -> Dict[str, Any]:
+    """Update style of a table column in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        table_id: Table ID
+        column_index: Column index (0-based)
+        width: Column width in points
+    """
+    success = docs.update_table_column_style(
+        document_id=document_id,
+        table_id=table_id,
+        column_index=column_index,
+        width=width
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Table column style updated successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to update table column style"
+    }
+
+@mcp.tool()
+def merge_table_cells(document_id: str, table_id: str, start_row: int, start_column: int,
+                     end_row: int, end_column: int) -> Dict[str, Any]:
+    """Merge table cells in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        table_id: Table ID
+        start_row: Start row index (0-based)
+        start_column: Start column index (0-based)
+        end_row: End row index (0-based)
+        end_column: End column index (0-based)
+    """
+    success = docs.merge_table_cells(
+        document_id=document_id,
+        table_id=table_id,
+        start_row=start_row,
+        start_column=start_column,
+        end_row=end_row,
+        end_column=end_column
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Table cells merged successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to merge table cells"
+    }
+
+@mcp.tool()
+def insert_table_row(document_id: str, table_id: str, row_index: int, num_rows: int = 1) -> Dict[str, Any]:
+    """Insert rows into a table in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        table_id: Table ID
+        row_index: Index where to insert the row(s)
+        num_rows: Number of rows to insert
+    """
+    success = docs.insert_table_row(
+        document_id=document_id,
+        table_id=table_id,
+        row_index=row_index,
+        num_rows=num_rows
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Table rows inserted successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to insert table rows"
+    }
+
+@mcp.tool()
+def insert_table_column(document_id: str, table_id: str, column_index: int, num_columns: int = 1) -> Dict[str, Any]:
+    """Insert columns into a table in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        table_id: Table ID
+        column_index: Index where to insert the column(s)
+        num_columns: Number of columns to insert
+    """
+    success = docs.insert_table_column(
+        document_id=document_id,
+        table_id=table_id,
+        column_index=column_index,
+        num_columns=num_columns
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Table columns inserted successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to insert table columns"
+    }
+
+@mcp.tool()
+def delete_table_row(document_id: str, table_id: str, row_index: int, num_rows: int = 1) -> Dict[str, Any]:
+    """Delete rows from a table in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        table_id: Table ID
+        row_index: Index of the first row to delete
+        num_rows: Number of rows to delete
+    """
+    success = docs.delete_table_row(
+        document_id=document_id,
+        table_id=table_id,
+        row_index=row_index,
+        num_rows=num_rows
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Table rows deleted successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to delete table rows"
+    }
+
+@mcp.tool()
+def delete_table_column(document_id: str, table_id: str, column_index: int, num_columns: int = 1) -> Dict[str, Any]:
+    """Delete columns from a table in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        table_id: Table ID
+        column_index: Index of the first column to delete
+        num_columns: Number of columns to delete
+    """
+    success = docs.delete_table_column(
+        document_id=document_id,
+        table_id=table_id,
+        column_index=column_index,
+        num_columns=num_columns
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Table columns deleted successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to delete table columns"
+    }
+
+@mcp.tool()
+def update_document_style(document_id: str,
+                        default_font_family: str = None,
+                        default_font_size: float = None,
+                        default_line_spacing: float = None,
+                        default_margin_top: float = None,
+                        default_margin_bottom: float = None,
+                        default_margin_left: float = None,
+                        default_margin_right: float = None,
+                        default_page_color: str = None) -> Dict[str, Any]:
+    """Update document-wide styles in a google docs document.
+    
+    Args:
+        document_id: ID of the document
+        default_font_family: Default font family for the document
+        default_font_size: Default font size in points
+        default_line_spacing: Default line spacing multiplier
+        default_margin_top: Top margin in points
+        default_margin_bottom: Bottom margin in points
+        default_margin_left: Left margin in points
+        default_margin_right: Right margin in points
+        default_page_color: Page background color in hex format
+    """
+    success = docs.update_document_style(
+        document_id=document_id,
+        default_font_family=default_font_family,
+        default_font_size=default_font_size,
+        default_line_spacing=default_line_spacing,
+        default_margin_top=default_margin_top,
+        default_margin_bottom=default_margin_bottom,
+        default_margin_left=default_margin_left,
+        default_margin_right=default_margin_right,
+        default_page_color=default_page_color
+    )
+    
+    if success:
+        return {
+            "success": True,
+            "message": "Document style updated successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to update document style"
+    }
+
+@mcp.tool()
+def create_table_with_content(document_id: str, rows: int, columns: int, content: Dict[str, str]) -> Dict[str, Any]:
+    """Create a table and insert text into specific cells.
+    
+    Args:
+        document_id: Document ID
+        rows: Number of rows in the table
+        columns: Number of columns in the table
+        content: Dictionary mapping cell coordinates to content
+               Format: {'row,column': 'content'}
+               Example: {'0,0': 'Header', '1,1': 'Data'}
+    """
+    success = docs.create_table_and_insert_text(document_id, rows, columns, content)
+    if success:
+        return {
+            "success": True,
+            "message": "Created table and inserted content successfully"
+        }
+    return {
+        "success": False,
+        "message": "Failed to create table and insert content"
+    }
 
 def signal_handler(signum, frame):
     """Signal handler to handle SIGINT and SIGTERM."""
